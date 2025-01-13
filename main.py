@@ -67,7 +67,7 @@ def get_statistics_on_programming_languages():
         if vacancies_found < 100:
             continue
         total_salary = [predict_rub_salary(vacancy) for vacancy in popular_languages[language] if
-                        isinstance(predict_rub_salary(vacancy), float)]
+                        isinstance(vacancy['salary'], float|int)]
         average_salary = sum(total_salary) / len(total_salary) if len(total_salary) != 0 else "Нет данных о зарплате"
         staticstics_languages[language] = {
             "vacancies_found": vacancies_found,
