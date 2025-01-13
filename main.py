@@ -7,11 +7,13 @@ import requests
 def get_vacancies():
     today = datetime.today()
     text = 'программист'
-    url = 'https://api.hh.ru/vacancies?text=программист&per_page=100&page=1'
-    total_page = requests.get(url).json()['pages']
+    params = {'text': text, 'per_page': 100, 'page': 1}
+    url = 'https://api.hh.ru/vacancies/'
+    total_page = requests.get(url, params=params).json()['pages']
     vacancies = []
     for page in range(total_page):
-        response = requests.get(f'https://api.hh.ru/vacancies?text={text}&per_page=100&page={page}').json()
+        params['page'] = page
+        response = requests.get(f'https://api.hh.ru/vacancies/', params=params).json()
         for vacancy in response['items']:
             created_at = datetime.strptime(vacancy['created_at'].split('T')[0], '%Y-%m-%d')
             if vacancy['area']['name'] == 'Москва' and today - created_at <= timedelta(days=30):
