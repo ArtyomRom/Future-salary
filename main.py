@@ -1,6 +1,7 @@
-from datetime import datetime, timedelta
-
+import os
 import requests
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
 from terminaltables import AsciiTable
 
 from superjob import get_statistics_on_programming_languages_sj
@@ -76,7 +77,7 @@ def get_statistics_on_programming_languages():
         staticstics_languages[language] = {
             "vacancies_found": vacancies_found,
             "vacancies_processed": len(total_salary),
-            "average_salary": int(average_salary) if isinstance(average_salary, float) else average_salary,
+            "average_salary": int(average_salary),
         }
     title = '-HeadHunter Moscow-'
     table_data = (
@@ -90,5 +91,6 @@ def get_statistics_on_programming_languages():
 
 
 if __name__ == '__main__':
+    load_dotenv()
     get_statistics_on_programming_languages()
-    get_statistics_on_programming_languages_sj()
+    print(get_statistics_on_programming_languages_sj(os.getenv('SECRET_KEY')))
