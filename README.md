@@ -22,11 +22,12 @@
 
   3. Активируйте виртуальное окружение:
    
-    - На Windows:
-      ```bash
-      venv\Scripts\activate
-      ```
-    - На macOS/Linux:
+        На Windows:
+      
+        ```bash
+        venv\Scripts\activate
+        ```
+        На macOS/Linux:
         ```bash
         source venv/bin/activate
         ```
@@ -38,8 +39,9 @@
   5. В файле .env есть `SECRET_KEY` его можно получить на [https://api.superjob.ru](https://api.superjob.ru) зарегистрировав свое приложение без этого данный с сайта [https://superjob.ru](https://superjob.ru) не будет 
   5. Запускаем файл main.py
   ```python main.py```
-  6. Пример вывода 
- ![img.png](img.png)
+  6. Пример вывода: 
+ 
+     ![img.png](img.png)
 
 ## Цель проекта
   - Код написан в образовательных целях на онлайн-курсе для веб-разработчиков dvmn.org.
