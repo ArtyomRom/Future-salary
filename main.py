@@ -1,4 +1,3 @@
-import pprint
 from datetime import datetime, timedelta
 from terminaltables import AsciiTable
 from superjob import get_statistics_on_programming_languages_sj
@@ -12,15 +11,19 @@ def get_vacancies():
     url = 'https://api.hh.ru/vacancies/'
     vacancies = []
     while True:
-        response = requests.get(url, params=params).json()
-        for vacancy in response['items']:
-            created_at = datetime.strptime(vacancy['created_at'].split('T')[0], '%Y-%m-%d')
-            if vacancy['area']['name'] == 'Москва' and today - created_at <= timedelta(days=30):
-                vacancies.append(vacancy)
-        if params['page'] == response['pages'] - 1:
-            break
-        else:
-            params['page'] += 1
+        try:
+            response = requests.get(url, params=params)
+            response.raise_for_status()
+            for vacancy in response.json()['items']:
+                created_at = datetime.strptime(vacancy['created_at'].split('T')[0], '%Y-%m-%d')
+                if vacancy['area']['name'] == 'Москва' and today - created_at <= timedelta(days=30):
+                    vacancies.append(vacancy)
+            if params['page'] == response['pages'] - 1:
+                break
+            else:
+                params['page'] += 1
+        except requests.exceptions.RequestException as e:
+            print(f"Произошла ошибка при запросе: {e}")
 
     return vacancies
 

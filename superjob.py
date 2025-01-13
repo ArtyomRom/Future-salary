@@ -25,14 +25,20 @@ def get_vacancies_sj():
     date_from = int((datetime.now() - timedelta(days=30)).timestamp())
     page = 0
     while True:
-        params = {'catalogues': 48, 'town': 'Москва', 'page': page, 'count': 40, 'date_published[from]': date_from}
-        response = requests.get(f'https://api.superjob.ru/2.0/vacancies/', headers=headers, params=params).json()
-        for vacancy in response['objects']:
-            vacancies_sj.append(vacancy)
+        try:
+            params = {'catalogues': 48, 'town': 'Москва', 'page': page, 'count': 40, 'date_published[from]': date_from}
+            response = requests.get(f'https://api.superjob.ru/2.0/vacancies/', headers=headers, params=params)
+            response.raise_for_status()
+            response = response.json()
+            for vacancy in response['objects']:
+                vacancies_sj.append(vacancy)
 
-        if not response.get('more', False):
-            break
-        page += 1
+            if not response.get('more', False):
+                break
+            page += 1
+        except requests.exceptions.RequestException as e:
+            print(f"Произошла ошибка при запросе: {e}")
+
 
     return vacancies_sj
 
