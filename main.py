@@ -1,3 +1,4 @@
+import pprint
 from datetime import datetime, timedelta
 from terminaltables import AsciiTable
 from superjob import get_statistics_on_programming_languages_sj
@@ -9,15 +10,18 @@ def get_vacancies():
     text = 'программист'
     params = {'text': text, 'per_page': 100, 'page': 1}
     url = 'https://api.hh.ru/vacancies/'
-    total_page = requests.get(url, params=params).json()['pages']
     vacancies = []
-    for page in range(total_page):
-        params['page'] = page
-        response = requests.get(f'https://api.hh.ru/vacancies/', params=params).json()
+    while True:
+        response = requests.get(url, params=params).json()
         for vacancy in response['items']:
             created_at = datetime.strptime(vacancy['created_at'].split('T')[0], '%Y-%m-%d')
             if vacancy['area']['name'] == 'Москва' and today - created_at <= timedelta(days=30):
                 vacancies.append(vacancy)
+        if params['page'] == response['pages'] - 1:
+            break
+        else:
+            params['page'] += 1
+
     return vacancies
 
 
