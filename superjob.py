@@ -1,11 +1,12 @@
 import os
-import requests
 from datetime import datetime, timedelta
+
+import requests
 from dotenv import load_dotenv
 from terminaltables import AsciiTable
 
-
 load_dotenv()
+
 
 def get_popular_languages_sj():
     popular_languages = {
@@ -23,15 +24,17 @@ def get_popular_languages_sj():
         popular_languages[language] = get_vacancies_sj(language)
 
     return popular_languages
-def predict_salary(salary_from, salary_to):
-    return None if salary_from == 0 else (salary_from * 1.2 + salary_to * 0.8) / 2
 
 
 def predict_rub_salary_sj(vacancy):
-    if vacancy['currency'] == 'rub':
-        averange_salary = predict_salary(vacancy['payment_from'], vacancy['payment_to'])
-        return averange_salary
-    return None
+    if vacancy['currency'] != 'rub':
+        return None
+    if vacancy['payment_from'] and vacancy['payment_to']:
+        return (vacancy['payment_from'] + vacancy['payment_to']) / 2
+    elif vacancy['payment_from']:
+        return vacancy['payment_from'] * 1.2
+    elif vacancy['payment_to']:
+        return vacancy['payment_to'] * 0.8
 
 
 def get_vacancies_sj(languange: str):
@@ -42,7 +45,8 @@ def get_vacancies_sj(languange: str):
     page = 0
     while True:
         try:
-            params = {'keywords': languange, 'catalogues': 48, 'town': 'Москва', 'page': page, 'count': 40, 'date_published[from]': date_from}
+            params = {'keywords': languange, 'catalogues': 48, 'town': 'Москва', 'page': page, 'count': 40,
+                      'date_published[from]': date_from}
             response = requests.get(f'https://api.superjob.ru/2.0/vacancies/', headers=headers, params=params)
             response.raise_for_status()
             response = response.json()
@@ -56,11 +60,7 @@ def get_vacancies_sj(languange: str):
             print(f"Произошла ошибка при запросе: {e}")
             break
 
-
     return vacancies_sj
-
-
-
 
 
 def get_statistics_on_programming_languages_sj():
@@ -70,9 +70,9 @@ def get_statistics_on_programming_languages_sj():
         vacancies_found = len(popular_languages[language])
         if vacancies_found == 0:
             continue
-        total_salary = [predict_rub_salary_sj(vacancy) for vacancy in popular_languages[language] if
-                        isinstance(vacancy['payment_from'], float|int)]
-        average_salary = sum(total_salary) / len(total_salary) if len(total_salary) != 0 else "Нет данных о зарплате"
+        total_salary = [predict_rub_salary_sj(vacancy) for vacancy in popular_languages[language]]
+        total_salary = [salary for salary in total_salary if salary]
+        average_salary = sum(total_salary) / len(total_salary) if len(total_salary) > 0 else 0
         staticstics_languages[language] = {
             "vacancies_found": vacancies_found,
             "vacancies_processed": len(total_salary),
@@ -87,7 +87,6 @@ def get_statistics_on_programming_languages_sj():
 
     table = AsciiTable(table_data, title=title)
     print(table.table)
-
 
 
 if __name__ == '__main__':

@@ -39,6 +39,7 @@ def get_vacancies_by_language(language: str):
                 created_at = datetime.strptime(vacancy['created_at'].split('T')[0], '%Y-%m-%d')
                 if today - created_at <= timedelta(days=30):
                     vacancies.append(vacancy)
+
             if params['page'] == response['pages'] - 1:
                 break
             else:
@@ -51,12 +52,15 @@ def get_vacancies_by_language(language: str):
 
 
 def predict_rub_salary(vacancy):
-    rub_salary = vacancy['salary']
-    if rub_salary is not None and rub_salary['currency'] == "RUR" and isinstance(rub_salary['from'],
-                                                                                 int) and isinstance(
-            rub_salary['to'], int):
-        return (rub_salary['from'] * 1.2 + rub_salary['to'] * 0.8) / 2
-    return None
+    rub_salary = vacancy.get('salary', False)
+    if not rub_salary or rub_salary['currency'] != 'RUR':
+        return None
+    if rub_salary['from'] and rub_salary['to']:
+        return (rub_salary['from'] + rub_salary['to']) / 2
+    elif rub_salary['from']:
+        return rub_salary['from'] * 1.2
+    elif rub_salary['to']:
+        return rub_salary['to'] * 0.8
 
 
 def get_statistics_on_programming_languages():
@@ -66,9 +70,9 @@ def get_statistics_on_programming_languages():
         vacancies_found = len(popular_languages[language])
         if vacancies_found < 100:
             continue
-        total_salary = [predict_rub_salary(vacancy) for vacancy in popular_languages[language] if
-                        isinstance(vacancy['salary'], float|int)]
-        average_salary = sum(total_salary) / len(total_salary) if len(total_salary) != 0 else "Нет данных о зарплате"
+        total_salary = [predict_rub_salary(vacancy) for vacancy in popular_languages[language]]
+        total_salary = [salary for salary in total_salary if salary]
+        average_salary = sum(total_salary) / len(total_salary)
         staticstics_languages[language] = {
             "vacancies_found": vacancies_found,
             "vacancies_processed": len(total_salary),
