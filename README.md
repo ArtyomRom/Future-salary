@@ -33,12 +33,14 @@
         ```
 
   4. Установите зависимости:
-    ```bash
-       pip install -r requirements.txt
-    ```
+      ```bash
+     pip install -r requirements.txt
+      ```
   5. В файле .env есть `SECRET_KEY` его можно получить на [https://api.superjob.ru](https://api.superjob.ru) зарегистрировав свое приложение без этого данный с сайта [https://superjob.ru](https://superjob.ru) не будет 
   5. Запускаем файл main.py
-  ```python main.py```
+     ```bash
+     python main.py
+     ```
   6. Пример вывода: 
  
      ![img.png](img.png)
