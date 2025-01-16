@@ -75,7 +75,7 @@ def get_statistics_on_programming_languages():
             continue
         salaries_by_vacancy = [predict_rub_salary(vacancy) for vacancy in vacancies]
         salaries_by_vacancy = [salary for salary in salaries_by_vacancy if salary]
-        average_salary = sum(salaries_by_vacancy) / len(salaries_by_vacancy)
+        average_salary = sum(salaries_by_vacancy) / len(salaries_by_vacancy) if salaries_by_vacancy else 0
         staticstics_languages[language] = {
             "vacancies_found": vacancies_found,
             "vacancies_processed": len(salaries_by_vacancy),
