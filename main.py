@@ -68,11 +68,12 @@ def predict_rub_salary(vacancy):
 def get_statistics_on_programming_languages():
     vacancies_by_language = group_vacancies_by_language_hh()
     staticstics_languages = {}
-    for language in vacancies_by_language.keys():
-        vacancies_found = len(vacancies_by_language[language])
-        if vacancies_found < 100:
+    minimum_number_of_vacancies = 100
+    for language, vacancies in vacancies_by_language.items():
+        vacancies_found = len(vacancies)
+        if vacancies_found < minimum_number_of_vacancies:
             continue
-        salaries_by_vacancy = [predict_rub_salary(vacancy) for vacancy in vacancies_by_language[language]]
+        salaries_by_vacancy = [predict_rub_salary(vacancy) for vacancy in vacancies]
         salaries_by_vacancy = [salary for salary in salaries_by_vacancy if salary]
         average_salary = sum(salaries_by_vacancy) / len(salaries_by_vacancy)
         staticstics_languages[language] = {
