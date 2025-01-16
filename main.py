@@ -30,7 +30,8 @@ def get_vacancies_by_language(language: str):
     text = 'программист'
     moscow_id = 1
     quantity_per_page = 100
-    params = {'text': f"{text} {language}", 'per_page': quantity_per_page, 'page': 1, 'area': moscow_id}
+    date_from = (today - timedelta(days=30)).strftime("%Y-%m-%dT%H:%M:%S")
+    params = {'text': f"{text} {language}", 'per_page': quantity_per_page, 'page': 1, 'area': moscow_id, 'date_from': date_from}
     url = 'https://api.hh.ru/vacancies/'
     vacancies = []
     while True:
@@ -39,9 +40,7 @@ def get_vacancies_by_language(language: str):
             response.raise_for_status()
             response = response.json()
             for vacancy in response['items']:
-                created_at = datetime.strptime(vacancy['created_at'].split('T')[0], '%Y-%m-%d')
-                if today - created_at <= timedelta(days=30):
-                    vacancies.append(vacancy)
+                vacancies.append(vacancy)
 
             if params['page'] == response['pages'] - 1:
                 break
