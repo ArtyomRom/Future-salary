@@ -35,10 +35,12 @@ def get_vacancies_sj(languange: str, secret_key):
     vacancies_sj = []
     headers = {'X-Api-App-Id': secret_key}
     date_from = int((datetime.now() - timedelta(days=30)).timestamp())
+    categoria_id = 48
+    quantity_per_page = 40
     page = 0
     while True:
         try:
-            params = {'keywords': languange, 'catalogues': 48, 'town': 'Москва', 'page': page, 'count': 40,
+            params = {'keywords': languange, 'catalogues': categoria_id, 'town': 'Москва', 'page': page, 'count': quantity_per_page,
                       'date_published[from]': date_from}
             response = requests.get(f'https://api.superjob.ru/2.0/vacancies/', headers=headers, params=params)
             response.raise_for_status()

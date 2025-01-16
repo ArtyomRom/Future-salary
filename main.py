@@ -28,7 +28,9 @@ def get_popular_languages():
 def get_vacancies_by_language(language: str):
     today = datetime.today()
     text = 'программист'
-    params = {'text': f"{text} {language}", 'per_page': 100, 'page': 1, 'area': 1}
+    moscow_id = 1
+    quantity_per_page = 100
+    params = {'text': f"{text} {language}", 'per_page': quantity_per_page, 'page': 1, 'area': moscow_id}
     url = 'https://api.hh.ru/vacancies/'
     vacancies = []
     while True:
