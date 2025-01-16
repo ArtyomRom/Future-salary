@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from terminaltables import AsciiTable
 import requests
 
-def get_popular_languages_sj(secret_key):
+def group_vacancies_by_language_sj(secret_key):
     popular_languages = {
         'JavaScript': [],
         'Java': [],
@@ -59,7 +59,7 @@ def get_vacancies_sj(languange: str, secret_key):
 
 
 def get_statistics_on_programming_languages_sj(secret_key: str):
-    popular_languages = get_popular_languages_sj(secret_key)
+    popular_languages = group_vacancies_by_language_sj(secret_key)
     staticstics_languages = {}
     for language in popular_languages.keys():
         vacancies_found = len(popular_languages[language])

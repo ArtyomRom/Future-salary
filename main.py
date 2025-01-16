@@ -7,7 +7,7 @@ from terminaltables import AsciiTable
 from superjob import get_statistics_on_programming_languages_sj
 
 
-def get_popular_languages():
+def group_vacancies_by_language_hh():
     popular_languages = {
         'JavaScript': [],
         'Java': [],
@@ -66,7 +66,7 @@ def predict_rub_salary(vacancy):
 
 
 def get_statistics_on_programming_languages():
-    popular_languages = get_popular_languages()
+    popular_languages = group_vacancies_by_language_hh()
     staticstics_languages = {}
     for language in popular_languages.keys():
         vacancies_found = len(popular_languages[language])
