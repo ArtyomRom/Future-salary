@@ -8,7 +8,7 @@ from superjob import get_statistics_on_programming_languages_sj
 
 
 def group_vacancies_by_language_hh():
-    popular_languages = {
+    vacancies_by_language = {
         'JavaScript': [],
         'Java': [],
         'Python': [],
@@ -19,10 +19,10 @@ def group_vacancies_by_language_hh():
         'C': [],
         'GO': [],
     }
-    for language in popular_languages.keys():
-        popular_languages[language] = get_vacancies_by_language(language)
+    for language in vacancies_by_language.keys():
+        vacancies_by_language[language] = get_vacancies_by_language(language)
 
-    return popular_languages
+    return vacancies_by_language
 
 
 def get_vacancies_by_language(language: str):
@@ -66,18 +66,18 @@ def predict_rub_salary(vacancy):
 
 
 def get_statistics_on_programming_languages():
-    popular_languages = group_vacancies_by_language_hh()
+    vacancies_by_language = group_vacancies_by_language_hh()
     staticstics_languages = {}
-    for language in popular_languages.keys():
-        vacancies_found = len(popular_languages[language])
+    for language in vacancies_by_language.keys():
+        vacancies_found = len(vacancies_by_language[language])
         if vacancies_found < 100:
             continue
-        total_salary = [predict_rub_salary(vacancy) for vacancy in popular_languages[language]]
-        total_salary = [salary for salary in total_salary if salary]
-        average_salary = sum(total_salary) / len(total_salary)
+        salaries_by_vacancy = [predict_rub_salary(vacancy) for vacancy in vacancies_by_language[language]]
+        salaries_by_vacancy = [salary for salary in salaries_by_vacancy if salary]
+        average_salary = sum(salaries_by_vacancy) / len(salaries_by_vacancy)
         staticstics_languages[language] = {
             "vacancies_found": vacancies_found,
-            "vacancies_processed": len(total_salary),
+            "vacancies_processed": len(salaries_by_vacancy),
             "average_salary": int(average_salary),
         }
     title = '-HeadHunter Moscow-'

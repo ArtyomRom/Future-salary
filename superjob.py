@@ -3,7 +3,7 @@ from terminaltables import AsciiTable
 import requests
 
 def group_vacancies_by_language_sj(secret_key):
-    popular_languages = {
+    vacancies_by_language = {
         'JavaScript': [],
         'Java': [],
         'Python': [],
@@ -14,10 +14,10 @@ def group_vacancies_by_language_sj(secret_key):
         'C': [],
         'GO': [],
     }
-    for language in popular_languages.keys():
-        popular_languages[language] = get_vacancies_sj(language, secret_key)
+    for language in vacancies_by_language.keys():
+        vacancies_by_language[language] = get_vacancies_sj(language, secret_key)
 
-    return popular_languages
+    return vacancies_by_language
 
 
 def predict_rub_salary_sj(vacancy):
@@ -59,18 +59,18 @@ def get_vacancies_sj(languange: str, secret_key):
 
 
 def get_statistics_on_programming_languages_sj(secret_key: str):
-    popular_languages = group_vacancies_by_language_sj(secret_key)
+    vacancies_by_language = group_vacancies_by_language_sj(secret_key)
     staticstics_languages = {}
-    for language in popular_languages.keys():
-        vacancies_found = len(popular_languages[language])
+    for language in vacancies_by_language.keys():
+        vacancies_found = len(vacancies_by_language[language])
         if vacancies_found == 0:
             continue
-        total_salary = [predict_rub_salary_sj(vacancy) for vacancy in popular_languages[language]]
-        total_salary = [salary for salary in total_salary if salary]
-        average_salary = sum(total_salary) / len(total_salary) if total_salary else 0
+        salaries_by_vacancy = [predict_rub_salary_sj(vacancy) for vacancy in vacancies_by_language[language]]
+        salaries_by_vacancy = [salary for salary in salaries_by_vacancy if salary]
+        average_salary = sum(salaries_by_vacancy) / len(salaries_by_vacancy) if salaries_by_vacancy else 0
         staticstics_languages[language] = {
             "vacancies_found": vacancies_found,
-            "vacancies_processed": len(total_salary),
+            "vacancies_processed": len(salaries_by_vacancy),
             "average_salary": average_salary,
         }
     title = '-SuperJob Moscow-'
