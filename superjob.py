@@ -46,6 +46,7 @@ def get_vacancies_sj(languange: str, secret_key):
             response.raise_for_status()
             response = response.json()
             for vacancy in response['objects']:
+                vacancy['total'] = response['total']
                 vacancies_sj.append(vacancy)
 
             if not response.get('more', False):
@@ -62,14 +63,14 @@ def get_statistics_on_programming_languages_sj(secret_key: str):
     vacancies_by_language = group_vacancies_by_language_sj(secret_key)
     staticstics_languages = {}
     for language, vacancies in vacancies_by_language.items():
-        vacancies_found = len(vacancies)
-        if vacancies_found == 0:
+        vacancies_found = set(map(lambda vacancy: vacancy['total'], vacancies))
+        if not vacancies_found:
             continue
         salaries_by_vacancy = [predict_rub_salary_sj(vacancy) for vacancy in vacancies]
         salaries_by_vacancy = [salary for salary in salaries_by_vacancy if salary]
         average_salary = sum(salaries_by_vacancy) / len(salaries_by_vacancy) if salaries_by_vacancy else 0
         staticstics_languages[language] = {
-            "vacancies_found": vacancies_found,
+            "vacancies_found": min(vacancies_found),
             "vacancies_processed": len(salaries_by_vacancy),
             "average_salary": average_salary,
         }
@@ -82,6 +83,5 @@ def get_statistics_on_programming_languages_sj(secret_key: str):
 
     table = AsciiTable(table_data, title=title)
     return (table.table)
-
 
 

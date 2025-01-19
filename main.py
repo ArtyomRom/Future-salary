@@ -40,16 +40,17 @@ def get_vacancies_by_language(language: str):
             response.raise_for_status()
             response = response.json()
             for vacancy in response['items']:
+                vacancy['found'] = response['found']
                 vacancies.append(vacancy)
 
-            if params['page'] == response['pages'] - 1:
+
+            if params['page'] >= response['pages']:
                 break
             else:
                 params['page'] += 1
         except requests.exceptions.RequestException as e:
             print(f"Произошла ошибка при запросе: {e}")
             break
-
     return vacancies
 
 
@@ -70,14 +71,14 @@ def get_statistics_on_programming_languages():
     staticstics_languages = {}
     minimum_number_of_vacancies = 100
     for language, vacancies in vacancies_by_language.items():
-        vacancies_found = len(vacancies)
-        if vacancies_found < minimum_number_of_vacancies:
+        vacancies_found = set(map(lambda x: x["found"], vacancies))
+        if not vacancies_found or min(vacancies_found) < minimum_number_of_vacancies:
             continue
         salaries_by_vacancy = [predict_rub_salary(vacancy) for vacancy in vacancies]
         salaries_by_vacancy = [salary for salary in salaries_by_vacancy if salary]
         average_salary = sum(salaries_by_vacancy) / len(salaries_by_vacancy) if salaries_by_vacancy else 0
         staticstics_languages[language] = {
-            "vacancies_found": vacancies_found,
+            "vacancies_found": min(vacancies_found),
             "vacancies_processed": len(salaries_by_vacancy),
             "average_salary": int(average_salary),
         }
