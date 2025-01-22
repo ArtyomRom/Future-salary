@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-
 import requests
 
 
@@ -48,10 +47,18 @@ def get_vacancies_sj(languange: str, secret_key):
             break
 
     return vacancies_sj
+def predict_rub_salary(vacancy, salary_from, salary_to):
+    if vacancy['currency'] not in ('RUR', 'rub'):
+        return None
+    if salary_from and salary_to:
+        return (salary_from + salary_to) / 2
+    elif salary_from:
+        return salary_from * 1.2
+    elif salary_to:
+        return salary_to * 0.8
 
 
 def get_statistics_on_programming_languages_sj(secret_key: str):
-    from main import predict_rub_salary
     vacancies_by_language = group_vacancies_by_language_sj(secret_key)
     staticstics_languages = {}
     for language, vacancies in vacancies_by_language.items():
@@ -69,3 +76,4 @@ def get_statistics_on_programming_languages_sj(secret_key: str):
             "average_salary": average_salary,
         }
     return staticstics_languages
+
