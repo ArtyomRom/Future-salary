@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+
 import requests
 
 
@@ -21,7 +22,10 @@ def group_vacancies_by_language_sj(secret_key):
 
 
 def get_vacancies_sj(languange: str, secret_key):
-    vacancies_sj = []
+    vacancies_sj = {
+        'vacancies': [],
+        'found_vacancies': 0,
+    }
     headers = {'X-Api-App-Id': secret_key}
     date_from = int((datetime.now() - timedelta(days=30)).timestamp())
     categoria_id = 48
@@ -36,8 +40,9 @@ def get_vacancies_sj(languange: str, secret_key):
             response.raise_for_status()
             response = response.json()
             for vacancy in response['objects']:
-                vacancy['total'] = response['total']
-                vacancies_sj.append(vacancy)
+                vacancies_sj['vacancies'].append(vacancy)
+                if not vacancies_sj['found_vacancies']:
+                    vacancies_sj['found_vacancies'] = response['total']
 
             if not response.get('more', False):
                 break
@@ -47,6 +52,8 @@ def get_vacancies_sj(languange: str, secret_key):
             break
 
     return vacancies_sj
+
+
 def predict_rub_salary(vacancy, salary_from, salary_to):
     if vacancy['currency'] not in ('RUR', 'rub'):
         return None
@@ -62,18 +69,17 @@ def get_statistics_on_programming_languages_sj(secret_key: str):
     vacancies_by_language = group_vacancies_by_language_sj(secret_key)
     staticstics_languages = {}
     for language, vacancies in vacancies_by_language.items():
-        vacancies_found = set(map(lambda vacancy: vacancy['total'], vacancies))
+        vacancies_found = vacancies['found_vacancies']
         if not vacancies_found:
             continue
         salaries_by_vacancy = [
             predict_rub_salary(vacancy, vacancy['payment_from'], vacancy['payment_to']) for vacancy
-            in vacancies]
+            in vacancies['vacancies']]
         salaries_by_vacancy = [salary for salary in salaries_by_vacancy if salary]
         average_salary = sum(salaries_by_vacancy) / len(salaries_by_vacancy) if salaries_by_vacancy else 0
         staticstics_languages[language] = {
-            "vacancies_found": min(vacancies_found),
+            "vacancies_found": vacancies_found,
             "vacancies_processed": len(salaries_by_vacancy),
             "average_salary": average_salary,
         }
     return staticstics_languages
-
